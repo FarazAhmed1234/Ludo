@@ -1,611 +1,509 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Improved Ludo Game</title>
-  <style>
-    /* layout */
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      margin: 20px;
-    }
-    #main{
-      width:1000px;
-      float:left;
-    }
-    #board{
-      background:url(Images/board.gif) no-repeat center center;
-      background-size:cover;
-      width:650px;
-      height:550px;
-      float:left;
-      margin-top:8px;
-      position:relative;
-      border-radius:8px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-    }
-
-    /* pawns */
-    .pawns{
-      width:30px;
-      height:30px;
-      border-radius:50%;
-      position:absolute;
-      cursor:pointer;
-      transition: top 350ms ease, left 350ms ease, transform 200ms;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-      display:block;
-      z-index: 5;
-    }
-    .pawns:active { transform: scale(0.95); }
-
-    /* dice */
-    #dice{
-      background-image:url(Images/dice.gif);
-      background-size:contain;
-      width:150px;
-      height:150px;
-      float:left;
-      margin-left:12px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    }
-
-    /* player indicator and text */
-    #controls {
-      margin-left: 12px;
-      float:left;
-      width:310px;
-    }
-    #playerWrap { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
-    #uselesstext1, #uselesstext2 { display:inline-block; }
-    #player {
-      font-weight:700;
-      text-transform:lowercase;
-      padding:6px 10px;
-      border-radius:8px;
-      background:rgba(255,255,255,0.06);
-    }
-    .glow-red { color: #c00; text-shadow: 0 0 10px rgba(255,100,100,0.8); }
-    .glow-blue { color: #006; text-shadow: 0 0 10px rgba(100,150,255,0.85); }
-    .glow-green { color: #060; text-shadow: 0 0 10px rgba(100,255,140,0.8); }
-    .glow-yellow { color: #b76b00; text-shadow: 0 0 10px rgba(255,240,120,0.9); }
-
-    #badtext { color: darkred; margin-top:6px; min-height:18px; }
-
-    /* scoreboard */
-    #scoreboard {
-      margin-top: 12px;
-      padding:10px;
-      border-radius:8px;
-      background: rgba(255,255,255,0.03);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-    }
-    #scoreboard h3 { margin:0 0 6px 0; }
-    #scoreboard p { margin:4px 0; font-weight:600; }
-
-    /* restart button */
-    #actions { margin-top:12px; display:flex; gap:8px; }
-    button { padding:8px 10px; border-radius:6px; border: none; cursor:pointer; font-weight:600; }
-    button:hover { opacity:0.95; }
-    .btn-primary { background:#2b7cff; color:white; }
-    .btn-danger { background:#ff4d4d; color:white; }
-
-    footer{
-      font-size:larger;
-      color:darkred;
-      clear:both;
-      margin-top:18px;
-    }
-
-    /* winner modal */
-    #winnerModal {
-      position: fixed;
-      left:0; right:0; top:0; bottom:0;
-      display: none;
-      align-items:center;
-      justify-content:center;
-      background: rgba(0,0,0,0.6);
-      z-index:9999;
-    }
-    #winnerModal .box {
-      background: #fff;
-      padding: 20px 26px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 18px 60px rgba(0,0,0,0.5);
-      min-width: 300px;
-    }
-    #winnerModal .box h2 { margin:6px 0; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ludo Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        #main {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 1200px;
+        }
+        
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #board {
+            background: #ffd699;
+            width: 550px;
+            height: 550px;
+            position: relative;
+            border: 3px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background-image: 
+                linear-gradient(#333 1px, transparent 1px),
+                linear-gradient(90deg, #333 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .home {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid #333;
+        }
+        
+        #red-home {
+            top: 20px;
+            right: 20px;
+            background: #ffcccc;
+        }
+        
+        #green-home {
+            top: 20px;
+            left: 20px;
+            background: #ccffcc;
+        }
+        
+        #yellow-home {
+            bottom: 20px;
+            left: 20px;
+            background: #ffffcc;
+        }
+        
+        #blue-home {
+            bottom: 20px;
+            right: 20px;
+            background: #cceeff;
+        }
+        
+        .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .pawns {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            border: 2px solid #333;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #333;
+            transition: transform 0.2s;
+        }
+        
+        .pawns:hover {
+            transform: scale(1.1);
+        }
+        
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 250px;
+        }
+        
+        #dice-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #dice {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: bold;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        #dice:hover {
+            transform: rotate(10deg);
+        }
+        
+        #dice.rolling {
+            animation: roll 0.5s ease-out;
+        }
+        
+        @keyframes roll {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #player-info {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%;
+            background: #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        #player {
+            font-weight: bold;
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        
+        #status {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .player-turn {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        #instructions {
+            max-width: 600px;
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        #instructions h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        #instructions ul {
+            margin-left: 20px;
+            line-height: 1.6;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .winning {
+            animation: celebrate 1s infinite;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+    </style>
 </head>
 <body>
-  <div id="main">
-    <div id="board"></div>
-
-    <div id="dice" onclick="randomNum()" title="Roll the dice"></div>
-
-    <!-- pawns (initial positions are same as your original) -->
-    <!-- red -->
-    <div class="pawns" id="redpawn1"    onclick="randomMove('red',1)" style="background-color:red;top:149px;left:442px;"></div>
-    <div class="pawns" id="redpawn2"    onclick="randomMove('red',2)" style="background-color:red;top:102px;left:395px;"></div>
-    <div class="pawns" id="redpawn3"    onclick="randomMove('red',3)" style="background-color:red;top:55px;left:442px;"></div>
-    <div class="pawns" id="redpawn4"    onclick="randomMove('red',4)" style="background-color:red;top:102px;left:490px;"></div>
-
-    <!-- yellow -->
-    <div class="pawns" id="yellowpawn1" onclick="randomMove('yellow',1)" style="background-color:yellow;top:451px;left:47px;"></div>
-    <div class="pawns" id="yellowpawn2" onclick="randomMove('yellow',2)" style="background-color:yellow;top:451px;left:140px;"></div>
-    <div class="pawns" id="yellowpawn3" onclick="randomMove('yellow',3)" style="background-color:yellow;top:404px;left:93px;"></div>
-    <div class="pawns" id="yellowpawn4" onclick="randomMove('yellow',4)" style="background-color:yellow;top:498px;left:93px;"></div>
-
-    <!-- green -->
-    <div class="pawns" id="greenpawn1"  onclick="randomMove('green',1)" style="background-color:green;top:149px;left:93px;"></div>
-    <div class="pawns" id="greenpawn2"  onclick="randomMove('green',2)" style="background-color:green;top:102px;left:140px;"></div>
-    <div class="pawns" id="greenpawn3"  onclick="randomMove('green',3)" style="background-color:green;top:55px;left:93px;"></div>
-    <div class="pawns" id="greenpawn4"  onclick="randomMove('green',4)" style="background-color:green;top:102px;left:47px;"></div>
-
-    <!-- blue -->
-    <div class="pawns" id="bluepawn1"   onclick="randomMove('blue',1)"  style="background-color:blue;top:451px;left:490px;"></div>
-    <div class="pawns" id="bluepawn2"   onclick="randomMove('blue',2)"  style="background-color:blue;top:451px;left:395px;"></div>
-    <div class="pawns" id="bluepawn3"   onclick="randomMove('blue',3)"  style="background-color:blue;top:404px;left:442px;"></div>
-    <div class="pawns" id="bluepawn4"   onclick="randomMove('blue',4)"  style="background-color:blue;top:498px;left:442px;"></div>
-
-    <div id="controls">
-      <div id="playerWrap">
-        <h4 id="uselesstext1">It`s </h4>
-        <h3 id="player" class="glow-red" style="color:red;">red</h3>
-        <h4 id="uselesstext2">'s turn</h4>
-      </div>
-      <p id="badtext"></p>
-
-      <div id="scoreboard">
-        <h3>Scoreboard</h3>
-        <p id="score-red">🔴 Red: 0/4</p>
-        <p id="score-blue">🔵 Blue: 0/4</p>
-        <p id="score-green">🟢 Green: 0/4</p>
-        <p id="score-yellow">🟡 Yellow: 0/4</p>
-      </div>
-
-      <div id="actions">
-        <button class="btn-primary" onclick="restartGame()">Restart</button>
-        <button class="btn-danger" onclick="showRules()">Rules</button>
-      </div>
+    <h1>Ludo Game</h1>
+    
+    <div id="main">
+        <div id="game-container">
+            <div id="board">
+                <div id="red-home" class="home"></div>
+                <div id="green-home" class="home"></div>
+                <div id="yellow-home" class="home"></div>
+                <div id="blue-home" class="home"></div>
+                <div class="center">LUDO</div>
+                
+                <!-- Red pawns -->
+                <div class="pawns" id="redpawn1" style="background-color:red; top:70px; left:400px;">1</div>
+                <div class="pawns" id="redpawn2" style="background-color:red; top:70px; left:450px;">2</div>
+                <div class="pawns" id="redpawn3" style="background-color:red; top:120px; left:400px;">3</div>
+                <div class="pawns" id="redpawn4" style="background-color:red; top:120px; left:450px;">4</div>
+                
+                <!-- Green pawns -->
+                <div class="pawns" id="greenpawn1" style="background-color:green; top:70px; left:70px;">1</div>
+                <div class="pawns" id="greenpawn2" style="background-color:green; top:70px; left:120px;">2</div>
+                <div class="pawns" id="greenpawn3" style="background-color:green; top:120px; left:70px;">3</div>
+                <div class="pawns" id="greenpawn4" style="background-color:green; top:120px; left:120px;">4</div>
+                
+                <!-- Yellow pawns -->
+                <div class="pawns" id="yellowpawn1" style="background-color:yellow; top:400px; left:70px;">1</div>
+                <div class="pawns" id="yellowpawn2" style="background-color:yellow; top:400px; left:120px;">2</div>
+                <div class="pawns" id="yellowpawn3" style="background-color:yellow; top:450px; left:70px;">3</div>
+                <div class="pawns" id="yellowpawn4" style="background-color:yellow; top:450px; left:120px;">4</div>
+                
+                <!-- Blue pawns -->
+                <div class="pawns" id="bluepawn1" style="background-color:blue; top:400px; left:400px;">1</div>
+                <div class="pawns" id="bluepawn2" style="background-color:blue; top:400px; left:450px;">2</div>
+                <div class="pawns" id="bluepawn3" style="background-color:blue; top:450px; left:400px;">3</div>
+                <div class="pawns" id="bluepawn4" style="background-color:blue; top:450px; left:450px;">4</div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div id="dice-container">
+                <h3>Click to Roll Dice</h3>
+                <div id="dice">?</div>
+            </div>
+            
+            <div id="player-info">
+                <h3>Current Player</h3>
+                <div id="player" style="color: red;">Red</div>
+                <div id="status">Roll the dice to start</div>
+            </div>
+            
+            <button id="reset-btn">New Game</button>
+        </div>
     </div>
-
-    <footer title="Copyright by Slavi Koen" id="copyright" style="clear:both;margin-top:6px;">FOR ME</footer>
-  </div>
-
-  <!-- winner modal -->
-  <div id="winnerModal">
-    <div class="box">
-      <h2 id="winnerText">Winner</h2>
-      <p>🎉 Congratulations!</p>
-      <button onclick="restartGame()">Play Again</button>
+    
+    <div id="instructions">
+        <h2>How to Play</h2>
+        <ul>
+            <li>Click on the dice to roll</li>
+            <li>Click on one of your pawns to move it</li>
+            <li>You need to roll a 6 to get a pawn out of your home area</li>
+            <li>If you land on an opponent's pawn, it will be sent back to their home</li>
+            <li>The first player to get all four pawns to the center wins!</li>
+        </ul>
     </div>
-  </div>
+    
+    <footer>
+        FOR ME | Copyright by Slavi Koen
+    </footer>
 
-  <!-- sound elements (optional: add your mp3 files in Sounds/) -->
-  <audio id="diceSound" src="Sounds/dice.mp3" preload="auto"></audio>
-  <audio id="moveSound" src="Sounds/move.mp3" preload="auto"></audio>
-  <audio id="killSound" src="Sounds/kill.mp3" preload="auto"></audio>
-  <audio id="winSound"  src="Sounds/win.mp3" preload="auto"></audio>
-
-  <script>
-    /* ======= your original variables and structures (kept & improved) ======= */
-    var currPos = 0;
-    var step = 49.5;
-    var currcolor = "";
-    var NumOfPaw = "";
-    var num = 0;
-    var clicked = false;
-    var currpawn = "";
-    var allcolor = ["red", "blue", "green", "yellow"];
-    var pawnOut = {red:0,blue:0,green:0,yellow:0};
-
-    function playSound(id) {
-      try { document.getElementById(id).currentTime = 0; document.getElementById(id).play(); } catch(e) {}
-    }
-
-    function HaveHover() {
-      for (var i = 0; i < allcolor.length; i++) {
-        for (var n = 1; n <= 4; n++) {
-          var firstPawn = document.getElementById(allcolor[i] + "pawn" + n);
-          var secondPawn = document.getElementById(currpawn);
-          if (!firstPawn || !secondPawn) continue;
-          if (firstPawn.style.top === secondPawn.style.top &&
-              firstPawn.style.left === secondPawn.style.left &&
-              currcolor !== allcolor[i] && currPos + num < 44) {
-            return allcolor[i] + "pawn" + n;
-          }
+    <script>
+        // Game state variables
+        let currentPlayer = 'red';
+        let diceValue = 0;
+        let gameActive = true;
+        let pawnsAtHome = {
+            red: 4,
+            green: 4,
+            yellow: 4,
+            blue: 4
+        };
+        
+        // DOM elements
+        const diceElement = document.getElementById('dice');
+        const playerElement = document.getElementById('player');
+        const statusElement = document.getElementById('status');
+        const resetButton = document.getElementById('reset-btn');
+        
+        // Initialize game
+        function initGame() {
+            currentPlayer = 'red';
+            diceValue = 0;
+            gameActive = true;
+            
+            // Reset pawn positions
+            const pawns = document.querySelectorAll('.pawns');
+            pawns.forEach(pawn => {
+                pawn.style.visibility = 'visible';
+                
+                // Reset to home positions
+                const id = pawn.id;
+                if (id.includes('red')) {
+                    pawn.style.top = id.includes('1') || id.includes('3') ? '70px' : '120px';
+                    pawn.style.left = id.includes('1') || id.includes('2') ? '400px' : '450px';
+                } else if (id.includes('green')) {
+                    pawn.style.top = id.includes('1') || id.includes('3') ? '70px' : '120px';
+                    pawn.style.left = id.includes('1') || id.includes('2') ? '70px' : '120px';
+                } else if (id.includes('yellow')) {
+                    pawn.style.top = id.includes('1') || id.includes('2') ? '400px' : '450px';
+                    pawn.style.left = id.includes('1') || id.includes('3') ? '70px' : '120px';
+                } else if (id.includes('blue')) {
+                    pawn.style.top = id.includes('1') || id.includes('2') ? '400px' : '450px';
+                    pawn.style.left = id.includes('1') || id.includes('3') ? '400px' : '450px';
+                }
+            });
+            
+            // Reset pawns at home count
+            pawnsAtHome = {
+                red: 4,
+                green: 4,
+                yellow: 4,
+                blue: 4
+            };
+            
+            updateUI();
         }
-      }
-      return false;
-    }
-
-    function Stuck() {
-      var text = document.getElementById('player');
-      if (onboard[currpawn] == 0 || currPos + num > 44) {
-        if (DontHaveOtherFree() || currPos + num > 44) {
-          var badtext = document.getElementById('badtext');
-          badtext.innerText = "Unfortunately you are stuck";
-          clicked = false;
-          var dice = document.getElementById('dice');
-          dice.style.backgroundImage = "url(Images/dice.gif)";
-          setTimeout(changePlayer, 1000);
+        
+        // Roll the dice
+        function rollDice() {
+            if (!gameActive) return;
+            
+            diceElement.classList.add('rolling');
+            statusElement.textContent = 'Rolling...';
+            
+            setTimeout(() => {
+                diceValue = Math.floor(Math.random() * 6) + 1;
+                diceElement.textContent = diceValue;
+                diceElement.classList.remove('rolling');
+                
+                statusElement.textContent = `You rolled a ${diceValue}. Select a pawn to move.`;
+                
+                // If player rolled a 6, they get another turn
+                if (diceValue !== 6) {
+                    setTimeout(() => {
+                        nextPlayer();
+                    }, 2000);
+                }
+            }, 1000);
         }
-      }
-    }
-
-    function changePlayer() {
-      if (num != 6) {
-        var text = document.getElementById('player');
-        switch (text.innerText) {
-          case "red": text.innerText = "blue"; updatePlayerGlow("blue"); break;
-          case "blue": text.innerText = "yellow"; updatePlayerGlow("yellow"); break;
-          case "yellow": text.innerText = "green"; updatePlayerGlow("green"); break;
-          case "green": text.innerText = "red"; updatePlayerGlow("red"); break;
+        
+        // Move pawn
+        function movePawn(pawnId) {
+            if (!gameActive || diceValue === 0) return;
+            
+            const pawn = document.getElementById(pawnId);
+            const color = pawnId.replace('pawn1', '').replace('pawn2', '').replace('pawn3', '').replace('pawn4', '');
+            
+            // Check if it's this player's turn
+            if (color !== currentPlayer) {
+                statusElement.textContent = "It's not your turn!";
+                return;
+            }
+            
+            // Check if pawn is at home and needs a 6 to move out
+            const isAtHome = parseInt(pawn.style.top) === 70 || parseInt(pawn.style.top) === 120;
+            
+            if (isAtHome && diceValue !== 6) {
+                statusElement.textContent = "You need a 6 to move a pawn out of home!";
+                return;
+            }
+            
+            // Move the pawn
+            let top = parseInt(pawn.style.top);
+            let left = parseInt(pawn.style.left);
+            
+            // Simple movement logic (in a real game, this would follow the Ludo path)
+            if (color === 'red') {
+                left += diceValue * 20;
+                if (left > 500) {
+                    top += (left - 500);
+                    left = 500;
+                }
+            } else if (color === 'green') {
+                left += diceValue * 20;
+            } else if (color === 'yellow') {
+                left += diceValue * 20;
+            } else if (color === 'blue') {
+                left += diceValue * 20;
+            }
+            
+            pawn.style.top = `${top}px`;
+            pawn.style.left = `${left}px`;
+            
+            // Check for wins
+            if (left > 500 && top > 250) {
+                pawnsAtHome[color]--;
+                pawn.style.visibility = 'hidden';
+                
+                if (pawnsAtHome[color] === 0) {
+                    gameActive = false;
+                    statusElement.textContent = `${color.toUpperCase()} WINS THE GAME!`;
+                    playerElement.textContent = "Game Over";
+                    playerElement.classList.add('winning');
+                    return;
+                }
+            }
+            
+            // Reset dice value and move to next player if not a 6
+            if (diceValue !== 6) {
+                setTimeout(nextPlayer, 1000);
+            } else {
+                statusElement.textContent = "You rolled a 6! Roll again.";
+            }
+            
+            diceValue = 0;
+            diceElement.textContent = '?';
         }
-      }
-      document.getElementById('badtext').innerText = "";
-      document.getElementById('dice').style.backgroundImage = "url(Images/dice.gif)";
-    }
-
-    var positions = {
-      redpawn1: 0, redpawn2: 0, redpawn3: 0, redpawn4: 0,
-      bluepawn1: 0, bluepawn2: 0, bluepawn3: 0, bluepawn4: 0,
-      greenpawn1: 0, greenpawn2: 0, greenpawn3: 0, greenpawn4: 0,
-      yellowpawn1: 0, yellowpawn2: 0, yellowpawn3: 0, yellowpawn4: 0
-    };
-    var onboard = {
-      redpawn1: 0, redpawn2: 0, redpawn3: 0, redpawn4: 0,
-      bluepawn1: 0, bluepawn2: 0, bluepawn3: 0, bluepawn4: 0,
-      greenpawn1: 0, greenpawn2: 0, greenpawn3: 0, greenpawn4: 0,
-      yellowpawn1: 0, yellowpawn2: 0, yellowpawn3: 0, yellowpawn4: 0
-    };
-
-    function DontHaveOtherFree() {
-      var text = document.getElementById('player');
-      for (var i = 1; i <=4; i++) {
-        if (onboard[text.innerText + "pawn" + i] == 1 || positions[text.innerText + "pawn" + i] + num >= 44) return false;
-      }
-      return true;
-    }
-
-    function CheckForWinner() {
-      if (pawnOut[currcolor] == 4) {
-        var dice = document.getElementById("dice");
-        var player = document.getElementById("player");
-        var uselesstext1 = document.getElementById("uselesstext1");
-        var uselesstext2 = document.getElementById("uselesstext2");
-        dice.innerText = "";
-        dice.style.visibility = "hidden";
-        uselesstext1.innerText = "";
-        uselesstext2.innerText = "";
-        player.innerText = "The Winner is the "+currcolor+" player";
-        // show modal
-        showWinner(currcolor);
-        playSound("winSound");
-      }
-    }
-
-    function updatePlayerGlow(color) {
-      var player = document.getElementById("player");
-      player.className = "";
-      player.classList.add("glow-" + color);
-      player.style.color = color;
-    }
-
-    /* movement helpers (these manipulate whichever pawn is stored in currpawn and use currcolor + NumOfPaw) */
-    function stepDown() {
-      var doc = document.getElementById(currcolor + "pawn"+NumOfPaw);
-      var curr = Number(doc.style.top.replace(/[a-z]/g, ''));
-      doc.style.top = (curr + step) + 'px';
-      currPos++;
-    }
-    function stepUp() {
-      var doc = document.getElementById(currpawn);
-      var curr = Number(doc.style.top.replace(/[a-z]/g, ''));
-      doc.style.top = (curr - step) + 'px';
-      currPos++;
-    }
-    function stepLeft() {
-      var doc = document.getElementById(currpawn);
-      var curr = Number(doc.style.left.replace(/[a-z]/g, ''));
-      doc.style.left = (curr - step) + 'px';
-      currPos++;
-    }
-    function stepRight() {
-      var doc = document.getElementById(currpawn);
-      var curr = Number(doc.style.left.replace(/[a-z]/g, ''));
-      doc.style.left = (curr + step) + 'px';
-      currPos++;
-    }
-
-    /* steps arrays (kept similar to your original sequence) */
-    var stepsRed = [];
-    var stepsYellow = [];
-    var stepsBlue = [];
-    var stepsGreen = [];
-    function pushSteps(value, steps, count) {
-      for (var i = 0; i < count; i++) steps.push(value);
-    }
-
-    // Red path
-    pushSteps(stepDown,stepsRed,4);
-    pushSteps(stepRight, stepsRed,4);
-    pushSteps(stepDown, stepsRed,2);
-    pushSteps(stepLeft, stepsRed,4);
-    pushSteps(stepDown, stepsRed,4);
-    pushSteps(stepLeft, stepsRed,2);
-    pushSteps(stepUp, stepsRed,4);
-    pushSteps(stepLeft, stepsRed,4);
-    pushSteps(stepUp, stepsRed,2);
-    pushSteps(stepRight, stepsRed,4);
-    pushSteps(stepUp, stepsRed,4);
-    pushSteps(stepRight, stepsRed,1);
-    pushSteps(stepDown, stepsRed,5);
-
-    // Yellow path
-    pushSteps(stepUp, stepsYellow,4);
-    pushSteps(stepLeft, stepsYellow,4);
-    pushSteps(stepUp, stepsYellow,2);
-    pushSteps(stepRight, stepsYellow,4);
-    pushSteps(stepUp, stepsYellow,4);
-    pushSteps(stepRight, stepsYellow,2);
-    pushSteps(stepDown, stepsYellow,4);
-    pushSteps(stepRight, stepsYellow,4);
-    pushSteps(stepDown, stepsYellow,2);
-    pushSteps(stepLeft, stepsYellow,4);
-    pushSteps(stepDown, stepsYellow,4);
-    pushSteps(stepLeft, stepsYellow,1);
-    pushSteps(stepUp, stepsYellow,5);
-
-    // Blue path
-    pushSteps(stepLeft, stepsBlue,4);
-    pushSteps(stepDown, stepsBlue,4);
-    pushSteps(stepLeft, stepsBlue,2);
-    pushSteps(stepUp, stepsBlue,4);
-    pushSteps(stepLeft, stepsBlue,4);
-    pushSteps(stepUp, stepsBlue,2);
-    pushSteps(stepRight, stepsBlue,4);
-    pushSteps(stepUp, stepsBlue,4);
-    pushSteps(stepRight, stepsBlue,2);
-    pushSteps(stepDown, stepsBlue,4);
-    pushSteps(stepRight, stepsBlue,4);
-    pushSteps(stepDown, stepsBlue,1);
-    pushSteps(stepLeft, stepsBlue,5);
-
-    // Green path
-    pushSteps(stepRight, stepsGreen,4);
-    pushSteps(stepUp, stepsGreen,4);
-    pushSteps(stepRight, stepsGreen,2);
-    pushSteps(stepDown, stepsGreen,4);
-    pushSteps(stepRight, stepsGreen,4);
-    pushSteps(stepDown, stepsGreen,2);
-    pushSteps(stepLeft, stepsGreen,4);
-    pushSteps(stepDown, stepsGreen,4);
-    pushSteps(stepLeft, stepsGreen,2);
-    pushSteps(stepUp, stepsGreen,4);
-    pushSteps(stepLeft, stepsGreen,4);
-    pushSteps(stepUp, stepsGreen,1);
-    pushSteps(stepRight, stepsGreen,5);
-
-    function ResetPawn(victim) {
-      onboard[victim] = 0;
-      positions[victim] = 0;
-      var pawnToMove = document.getElementById(victim);
-      if (!pawnToMove) return;
-      switch (victim) {
-        case "redpawn1": pawnToMove.style.top = "149px"; pawnToMove.style.left = "442px"; break;
-        case "redpawn2": pawnToMove.style.top = "102px"; pawnToMove.style.left = "395px"; break;
-        case "redpawn3": pawnToMove.style.top = "55px"; pawnToMove.style.left = "442px"; break;
-        case "redpawn4": pawnToMove.style.top = "102px"; pawnToMove.style.left = "490px"; break;
-        case "bluepawn1": pawnToMove.style.top = "451px"; pawnToMove.style.left = "490px"; break;
-        case "bluepawn2": pawnToMove.style.top = "451px"; pawnToMove.style.left = "395px"; break;
-        case "bluepawn3": pawnToMove.style.top = "404px"; pawnToMove.style.left = "442px"; break;
-        case "bluepawn4": pawnToMove.style.top = "498px"; pawnToMove.style.left = "442px"; break;
-        case "greenpawn1": pawnToMove.style.top = "149px"; pawnToMove.style.left = "93px"; break;
-        case "greenpawn2": pawnToMove.style.top = "102px"; pawnToMove.style.left = "140px"; break;
-        case "greenpawn3": pawnToMove.style.top = "55px"; pawnToMove.style.left = "93px"; break;
-        case "greenpawn4": pawnToMove.style.top = "102px"; pawnToMove.style.left = "47px"; break;
-        case "yellowpawn1": pawnToMove.style.top = "451px"; pawnToMove.style.left = "47px"; break;
-        case "yellowpawn2": pawnToMove.style.top = "451px"; pawnToMove.style.left = "140px"; break;
-        case "yellowpawn3": pawnToMove.style.top = "404px"; pawnToMove.style.left = "93px"; break;
-        case "yellowpawn4": pawnToMove.style.top = "498px"; pawnToMove.style.left = "93px"; break;
-      }
-      pawnToMove.style.visibility = "visible";
-    }
-
-    /* dice roll with animation */
-    function rollDiceAnimation(finalCallback) {
-      var dice = document.getElementById("dice");
-      playSound("diceSound");
-      var rollCount = 12;
-      var interval = setInterval(function() {
-        var temp = Math.floor(Math.random()*6)+1;
-        dice.style.backgroundImage = "url(Images/" + temp + ".jpg)";
-        rollCount--;
-        if (rollCount <= 0) {
-          clearInterval(interval);
-          finalCallback();
+        
+        // Switch to next player
+        function nextPlayer() {
+            const players = ['red', 'green', 'yellow', 'blue'];
+            const currentIndex = players.indexOf(currentPlayer);
+            currentPlayer = players[(currentIndex + 1) % players.length];
+            
+            updateUI();
+            statusElement.textContent = "Roll the dice";
         }
-      }, 80);
-    }
-
-    function randomNum() {
-      if (!clicked) {
-        clicked = true;
-        // animate roll then set the number
-        rollDiceAnimation(function() {
-          num = Math.floor((Math.random()*6)+1);
-          var dice = document.getElementById('dice');
-          dice.style.backgroundImage = "url(Images/" + num + ".jpg)";
-          // if no possible moves and not a six
-          if (num != 6 && DontHaveOtherFree()) {
-            document.getElementById('badtext').innerText = "Unfortunately you are stuck";
-            setTimeout(changePlayer, 1000);
-            clicked = false;
-          }
+        
+        // Update UI elements
+        function updateUI() {
+            playerElement.textContent = currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1);
+            playerElement.style.color = currentPlayer;
+            playerElement.classList.add('player-turn');
+            
+            // Remove the animation class after it completes
+            setTimeout(() => {
+                playerElement.classList.remove('player-turn');
+            }, 1500);
+        }
+        
+        // Event listeners
+        diceElement.addEventListener('click', rollDice);
+        resetButton.addEventListener('click', initGame);
+        
+        // Add click events to pawns
+        const pawns = document.querySelectorAll('.pawns');
+        pawns.forEach(pawn => {
+            pawn.addEventListener('click', () => {
+                movePawn(pawn.id);
+            });
         });
-      }
-    }
-
-    /* update scoreboard display */
-    function updateScore() {
-      document.getElementById("score-red").innerText = "🔴 Red: " + pawnOut.red + "/4";
-      document.getElementById("score-blue").innerText = "🔵 Blue: " + pawnOut.blue + "/4";
-      document.getElementById("score-green").innerText = "🟢 Green: " + pawnOut.green + "/4";
-      document.getElementById("score-yellow").innerText = "🟡 Yellow: " + pawnOut.yellow + "/4";
-    }
-
-    /* move logic when pawn clicked */
-    function randomMove(Color, paw) {
-      var text = document.getElementById('player');
-      NumOfPaw = paw;
-      currcolor = Color;
-      currpawn = currcolor + "pawn" + NumOfPaw;
-      currPos = positions[currpawn];
-      if (num + currPos > 44) {
-        Stuck();
-        return;
-      }
-      if (!clicked) return; // must roll before moving
-      if (text.innerText !== currcolor) return; // not this player's turn
-
-      var position = currPos;
-
-      // bring pawn on board if it's off and roll is 6
-      if (onboard[currpawn] === 0 && num === 6) {
-        var doc = document.getElementById(currpawn);
-        switch (Color) {
-          case "red":
-            doc.style.left = '318px';
-            doc.style.top = '28px';
-            break;
-          case "yellow":
-            doc.style.left = '219px';
-            doc.style.top = '523px';
-            break;
-          case "blue":
-            doc.style.left = '516px';
-            doc.style.top = '325px';
-            break;
-          case "green":
-            doc.style.left = '21px';
-            doc.style.top = '226px';
-            break;
-        }
-        onboard[currpawn] = 1;
-        positions[currpawn] = 1; // set to first spot
-        // reset dice & end
-        num = 0;
-        clicked = false;
-        document.getElementById('dice').style.backgroundImage = "url(Images/dice.gif)";
-        playSound("moveSound");
-        // don't change player since rolling a 6 usually gives another turn - keep as per your logic
-        return;
-      }
-
-      // if pawn is onboard, move according to steps arrays (animated via CSS transition)
-      if (onboard[currpawn] === 1) {
-        // iterate through step functions to move pawn one-step at a time with small delays for smooth animation
-        var stepsArray;
-        switch (Color) {
-          case "red": stepsArray = stepsRed; break;
-          case "yellow": stepsArray = stepsYellow; break;
-          case "blue": stepsArray = stepsBlue; break;
-          case "green": stepsArray = stepsGreen; break;
-        }
-        // move one by one with timeout to trigger CSS transition visually
-        var movesToDo = num;
-        var idx = currPos;
-        function doStep() {
-          if (movesToDo <= 0) {
-            // finished moving
-            positions[currpawn] = currPos;
-            playSound("moveSound");
-            // check kill
-            var victim = HaveHover();
-            if (victim !== false) {
-              ResetPawn(victim);
-              playSound("killSound");
-            }
-            // if reached final
-            if (currPos == 44) {
-              pawnOut[currcolor]++;
-              onboard[currpawn] = 0;
-              positions[currpawn] = 0;
-              document.getElementById(currpawn).style.visibility = "hidden";
-              updateScore();
-              CheckForWinner();
-            }
-            // end of move: change player (unless last roll is 6? your original logic only prevents change when num==6)
-            changePlayer();
-            num = 0;
-            clicked = false;
-            document.getElementById('dice').style.backgroundImage = "url(Images/dice.gif)";
-            return;
-          }
-          // ensure we don't exceed steps array length
-          if (idx >= stepsArray.length) { movesToDo = 0; doStep(); return; }
-          // call step function (these update currPos)
-          stepsArray[idx]();
-          idx++;
-          movesToDo--;
-          // small delay between steps for visible motion
-          setTimeout(doStep, 220);
-        }
-        doStep();
-      } else {
-        // pawn is not onboard and rolled not six => stuck
-        Stuck();
-      }
-    }
-
-    /* restart game */
-    function restartGame() {
-      // reset all variables and DOM positions
-      pawnOut = {red:0,blue:0,green:0,yellow:0};
-      for (var color of allcolor) {
-        for (var i = 1; i <= 4; i++) {
-          var id = color + "pawn" + i;
-          onboard[id] = 0;
-          positions[id] = 0;
-          ResetPawn(id);
-          document.getElementById(id).style.visibility = "visible";
-        }
-      }
-      updateScore();
-      // reset UI
-      document.getElementById('dice').style.visibility = "visible";
-      document.getElementById('dice').style.backgroundImage = "url(Images/dice.gif)";
-      document.getElementById('player').innerText = "red";
-      updatePlayerGlow("red");
-      document.getElementById('uselesstext1').innerText = "It`s ";
-      document.getElementById('uselesstext2').innerText = "'s turn";
-      num = 0; clicked = false; currPos = 0; currcolor = ""; NumOfPaw = ""; currpawn = "";
-      document.getElementById("winnerModal").style.display = "none";
-    }
-
-    /* winner UI */
-    function showWinner(color) {
-      var modal = document.getElementById("winnerModal");
-      document.getElementById("winnerText").innerText = "Winner: " + color.toUpperCase();
-      modal.style.display = "flex";
-    }
-
-    /* small helper: rules popup */
-    function showRules() {
-      alert("Ludo rules (basic):\n\n- Roll the dice by clicking the dice.\n- You need a 6 to move a pawn out from home.\n- Click any of your pawns to move it after rolling.\n- Landing on opponent's pawn sends it back to home.\n- First player to move all 4 pawns to the finish wins.");
-    }
-
-    /* initial scoreboard */
-    updateScore();
-    updatePlayerGlow("red");
-  </script>
+        
+        // Initialize the game
+        initGame();
+    </script>
 </body>
 </html>
